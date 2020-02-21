@@ -169,10 +169,10 @@ namespace xavier
 			{
 				alignments.alignH.push_back( queryHChar );
 				alignments.alignV.push_back( '-' );
-				std::cout << "dp, slp, sl, st, sd: " << dp_pos << " " << sq_left_pos << " " << sl << " " << st << " " << sd << std::endl;
-				std::cout << queryHChar << queryVChar << std::endl;
-				std::cout << it->vqueryv << std::endl;
-				std::cout << it->vqueryh << std::endl;
+				// std::cout << "dp, slp, sl, st, sd: " << dp_pos << " " << sq_left_pos << " " << sl << " " << st << " " << sd << std::endl;
+				// std::cout << queryHChar << queryVChar << std::endl;
+				// std::cout << it->vqueryv << std::endl;
+				// std::cout << it->vqueryh << std::endl;
 				// std::cout << (scoringScheme.score( queryHChar, queryVChar ) + offset) << std::endl;
 				dp_pos = sq_left_pos - it->lastMove;
 			// std::cout << it->antiDiag1 << std::endl;
@@ -187,7 +187,7 @@ namespace xavier
 			}
 			else
 			{
-				std::cout << "ERROR1" << std::endl;
+				// std::cout << "ERROR1" << std::endl;
 			}
 			// std::cout << std::endl << std::endl;
 		}
@@ -201,7 +201,7 @@ namespace xavier
 
 		while ( i > 0 && j > 0 )
 		{
-			std::cout << i << " " << j << std::endl;
+			// std::cout << i << " " << j << std::endl;
 			char queryHChar = queryh[j-1];
 			char queryVChar = queryv[i-1];
 
@@ -234,7 +234,7 @@ namespace xavier
 			}
 			else
 			{
-				std::cout << "ERROR2" << std::endl;
+				// std::cout << "ERROR2" << std::endl;
 			}
 		}
 
@@ -243,7 +243,7 @@ namespace xavier
 		return alignments;
 	}
 
-	void Trace::saveOpeningPhaseDPMatrix ( std::vector< std::vector<int> > _DPMatrix, int8_t* _queryh, int8_t* _queryv )
+	void Trace::saveOpeningPhaseDPMatrix ( std::vector< std::vector<int> > _DPMatrix, int16_t* _queryh, int16_t* _queryv )
 	{
 		DPMatrix = _DPMatrix;
 		queryh = _queryh;

@@ -157,7 +157,6 @@ int main(int argc, char const *argv[])
 	// std::cout << aligner.getBestScore() << std::endl;
 	// std::cout << aligner.getCurrScore() << std::endl;
 
-
 	xavier::AlignmentResult result = xavier::seed_and_extend_right( seq1, seq2, penalties, x, seed );
 	std::cout << "result.bestScore	" << result.bestScore << std::endl;
 	std::cout << "result.exitScore	" << result.exitScore << std::endl;
@@ -165,9 +164,9 @@ int main(int argc, char const *argv[])
 	std::cout << "result.endH	" << result.endH << std::endl;
 	std::cout << "result.begV	" << result.begV << std::endl;
 	std::cout << "result.endV	" << result.endV << std::endl;
-	std::cout << "result.matches " << result.matched_pair.matches << std::endl;
-	std::cout << "result.alignH " << result.matched_pair.alignH << std::endl;
-	std::cout << "result.alignV " << result.matched_pair.alignV << std::endl;
+	// std::cout << "result.matches " << result.matched_pair.matches << std::endl;
+	// std::cout << "result.alignH " << result.matched_pair.alignH << std::endl;
+	// std::cout << "result.alignV " << result.matched_pair.alignV << std::endl;
 
 	return 0;
 }
