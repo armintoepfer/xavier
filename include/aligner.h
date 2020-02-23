@@ -124,7 +124,6 @@ namespace xavier
 
 		int64_t getBestScore   () const { return bestScore;    }
 		int64_t getCurrScore   () const { return currScore;    }
-		int64_t getScoreOffset () const { return scoreOffset;  }
 		int64_t getScoreDropoff() const { return scoreDropOff; }
 
 		VectorRegister getAntiDiag1() const { return antiDiag1; }
@@ -144,7 +143,6 @@ namespace xavier
 		 */
 		void setBestScore   ( int64_t score  ) { bestScore = score;    }
 		void setCurrScore   ( int64_t score  ) { currScore = score;    }
-		void setScoreOffset ( int64_t offset ) { scoreOffset = offset; }
 
 		void updateQueryH ( const uint16_t idx, const int16_t value ) { vqueryh[idx] = value; }
 		void updateQueryV ( const uint16_t idx, const int16_t value ) { vqueryv[idx] = value; }
@@ -204,7 +202,6 @@ namespace xavier
 		/* xDrop variables */
 		int64_t bestScore;
 		int64_t currScore;
-		int64_t scoreOffset;
 		int64_t scoreDropOff;
 
 		/* DP Matrix Aligner Vectors */

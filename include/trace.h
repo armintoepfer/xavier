@@ -68,7 +68,6 @@ namespace xavier
 		antiDiag3(0),
 		vqueryh(0),
 		vqueryv(0),
-		scoreOffset(0),
 		lastMove(0)
 		{}
 
@@ -88,7 +87,6 @@ namespace xavier
 
 		VectorRegister vqueryh;
 		VectorRegister vqueryv;
-		int64_t 	   scoreOffset;
 		int            lastMove;
 	};
 

@@ -35,7 +35,7 @@
 
 #include "utils.h"
 
-#define BWD (64)
+#define BWD (128)
 
 int main(int argc, char const *argv[])
 {

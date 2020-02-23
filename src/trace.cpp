@@ -19,7 +19,6 @@ namespace xavier
 		antiDiag3( _ad3 ),
 		vqueryh( _vqh ),
 		vqueryv( _vqv ),
-		scoreOffset( offset ),
 		lastMove( _lastMove )
 		{ }
 
@@ -29,7 +28,6 @@ namespace xavier
 		antiDiag3( copy.antiDiag3 ),
 		vqueryh( copy.vqueryh ),
 		vqueryv( copy.vqueryv ),
-		scoreOffset( copy.scoreOffset ),
 		lastMove( copy.lastMove )
 		{ }
 
@@ -64,18 +62,6 @@ namespace xavier
 		size_t sq_above_pos = 0;
 		size_t sq_diag_pos  = 0;
 
-		// int iteri = 0;
-		// for ( auto it = trace.rbegin(); it != trace.rbegin() + 34; ++it )
-		// {
-		// 	std::cout << iteri << " " << it->scoreOffset << std::endl;
-		// 	std::cout << it->antiDiag1 << std::endl;
-		// 	std::cout << it->antiDiag2 << std::endl;
-		// 	std::cout << it->antiDiag3 << std::endl;
-		// 	std::cout << it->vqueryh << std::endl;
-		// 	std::cout << it->vqueryv << std::endl;
-		// 	iteri++;
-		// }
-
 		// GG: get antidiag index of antiDiag3 (32 elements-wide)
 		// GG: keep track of the max
 		// GG: find elements that created that max and so on and so for
@@ -83,76 +69,23 @@ namespace xavier
 		// GG: much work in converting indexes
 		for ( auto it = itAtMax; std::next(it) != trace.rend(); ++it )
 		{
-			// it  = antidiag1, antidiag2, and antidiag3
-			// max = max( antidiag3 )
-			// nit = antidiag1, antidiag2, and antidiag3
-
 			// Calculate necessary position in antiDiag1 and antiDiag2
 			auto nit = std::next(it);
-
-			// GG: if last move is rigth
-			// if ( it->lastMove == 0 )
-			// {
 
 			sq_left_pos  = dp_pos;
 			sq_above_pos = dp_pos + 1;
 			sq_diag_pos  = dp_pos;
 
-			// if ( nit == trace.rend() )
-			// {
-			// 	sq_diag_pos = dp_pos;
-			// }
-			// else if ( nit->lastMove == 0 )
-			// {
-			// 	sq_diag_pos = dp_pos + 1;
-			// }
-			// else if ( nit->lastMove == 1 )
-			// {
-			// 	sq_diag_pos = dp_pos;
-			// }
-			// }
-			// else if ( it->lastMove == 1 )
-			// {
-			// 	sq_left_pos  = dp_pos - 1;
-			// 	sq_above_pos = dp_pos;
-			// 	sq_diag_pos = dp_pos + 1;
-
-			// 	// if ( nit == trace.rend() )
-			// 	// {
-			// 	// 	// std::cout << "here1" << std::endl;
-			// 	// 	sq_diag_pos = dp_pos;
-			// 	// }
-			// 	// else if ( nit->lastMove == 0 )
-			// 	// {
-			// 	// 	// std::cout << "here2" << std::endl;
-			// 	// 	sq_diag_pos = dp_pos;
-			// 	// }
-			// 	// else if ( nit->lastMove == 1 )
-			// 	// {
-			// 	// 	// std::cout << "here3" << std::endl;
-			// 	// 	sq_diag_pos = dp_pos + 1;
-			// 	// }
-			// }
-
 			// Calculate where the max value came from
 			char queryHChar = it->vqueryh[dp_pos];
 			char queryVChar = it->vqueryv[dp_pos];
 
-			int st = it->antiDiag3[dp_pos] + it->scoreOffset;
+			int st = it->antiDiag3[dp_pos];
 
-			int offset = nit == trace.rend() ? 0 : nit->scoreOffset;
-			int sa = sq_above_pos >= VectorRegister::VECTORWIDTH ? VectorRegister::NINF : it->antiDiag2[sq_above_pos] + scoringScheme.getGapScore() + offset;
-			int sl = sq_left_pos >= VectorRegister::VECTORWIDTH ? VectorRegister::NINF : it->antiDiag2[sq_left_pos]  + scoringScheme.getGapScore() + offset;
-			int sd = sq_diag_pos >= VectorRegister::VECTORWIDTH ? VectorRegister::NINF : it->antiDiag1[sq_diag_pos]  + scoringScheme.score( queryHChar, queryVChar ) + offset;
+			int sa = sq_above_pos >= VectorRegister::VECTORWIDTH ? VectorRegister::NINF : it->antiDiag2[sq_above_pos] + scoringScheme.getGapScore();
+			int sl = sq_left_pos  >= VectorRegister::VECTORWIDTH ? VectorRegister::NINF : it->antiDiag2[sq_left_pos]  + scoringScheme.getGapScore();
+			int sd = sq_diag_pos  >= VectorRegister::VECTORWIDTH ? VectorRegister::NINF : it->antiDiag1[sq_diag_pos]  + scoringScheme.score( queryHChar, queryVChar );
 
-			// std::cout << dp_pos << std::endl;
-			// std::cout << sq_diag_pos << std::endl;
-			// std::cout << it->antiDiag1 << std::endl;
-			// std::cout << it->antiDiag2 << std::endl;
-			// std::cout << it->antiDiag3 << std::endl;
-			// std::cout << offset << std::endl;
-			// std::cout << st << " " << it->scoreOffset << " " << sd << std::endl;
-			// std::cout << (it->lastMove == 0 ? "RIGHT" : "DOWN" )<< std::endl;
 			if ( sd != VectorRegister::NINF && sd == st )
 			{
 				if ( queryHChar == queryVChar )
@@ -169,15 +102,7 @@ namespace xavier
 			{
 				alignments.alignH.push_back( queryHChar );
 				alignments.alignV.push_back( '-' );
-				// std::cout << "dp, slp, sl, st, sd: " << dp_pos << " " << sq_left_pos << " " << sl << " " << st << " " << sd << std::endl;
-				// std::cout << queryHChar << queryVChar << std::endl;
-				// std::cout << it->vqueryv << std::endl;
-				// std::cout << it->vqueryh << std::endl;
-				// std::cout << (scoringScheme.score( queryHChar, queryVChar ) + offset) << std::endl;
 				dp_pos = sq_left_pos - it->lastMove;
-			// std::cout << it->antiDiag1 << std::endl;
-			// std::cout << it->antiDiag2 << std::endl;
-			// std::cout << it->antiDiag3 << std::endl;
 			}
 			else if ( sa != VectorRegister::NINF && sa == st )
 			{
@@ -185,11 +110,6 @@ namespace xavier
 				alignments.alignV.push_back( queryVChar );
 				dp_pos = sq_above_pos - it->lastMove;
 			}
-			else
-			{
-				// std::cout << "ERROR1" << std::endl;
-			}
-			// std::cout << std::endl << std::endl;
 		}
 
 		// Handle Opening Phase Specially
@@ -201,7 +121,6 @@ namespace xavier
 
 		while ( i > 0 && j > 0 )
 		{
-			// std::cout << i << " " << j << std::endl;
 			char queryHChar = queryh[j-1];
 			char queryVChar = queryv[i-1];
 
@@ -231,10 +150,6 @@ namespace xavier
 				alignments.alignH.push_back( '-' );
 				alignments.alignV.push_back( queryVChar );
 				--i;
-			}
-			else
-			{
-				// std::cout << "ERROR2" << std::endl;
 			}
 		}
 

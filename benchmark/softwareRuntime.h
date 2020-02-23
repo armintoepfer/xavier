@@ -63,6 +63,8 @@ double seqanAlign(int mat, int mis, int gap, int k, int xdrop,
 	auto end4 = std::chrono::high_resolution_clock::now();
 	diff4 = end4-start4;
 
+	std::cout << score << std::endl;
+
 	return diff4.count();
 }
 
@@ -81,6 +83,8 @@ double xavireAlign(int mat, int mis, int gap, int k, int xdrop,
 
 	auto end1 = std::chrono::high_resolution_clock::now();
 	diff1 = end1-start1;
+
+	std::cout << result.bestScore << std::endl;
 
     return diff1.count();
 }

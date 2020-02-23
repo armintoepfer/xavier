@@ -34,7 +34,6 @@ namespace xavier
 
 		bestScore    = 0;
 		currScore    = 0;
-		scoreOffset  = 0;
 		scoreDropOff = _scoreDropOff;
 	}
 
@@ -63,10 +62,6 @@ namespace xavier
                 int oneF = DPmatrix[i-1][j-1];
 
                 // Comparing bases
-                // if (queryh[j-1] == queryv[i-1])
-                //     oneF += scoringScheme.getMatchScore();
-                // else
-                //     oneF += scoringScheme.getMismatchScore();
 				oneF += scoringScheme.score( queryh[j-1], queryv[i-1] );
 
                 int twoF = std::max (DPmatrix[i-1][j], DPmatrix[i][j-1]);
@@ -82,8 +77,6 @@ namespace xavier
 
         for ( int i = 0; i < VectorRegister::LOGICALWIDTH; ++i )
         {
-			// TODO: NINF at the end of vqueryv needs to be questioned
-			// I think this is ok
         	vqueryh[i] = queryh[i + 1];
         	vqueryv[i] = queryv[VectorRegister::LOGICALWIDTH - i];
         }
@@ -107,7 +100,6 @@ namespace xavier
                 antiDiagMax = value2;
         }
 
-		// TODO: Check below for correctness
         antiDiag1[VectorRegister::LOGICALWIDTH] = VectorRegister::NINF;
         antiDiag2[VectorRegister::LOGICALWIDTH] = VectorRegister::NINF;
         antiDiag3 = VectorRegister( VectorRegister::NINF );
@@ -155,13 +147,10 @@ namespace xavier
 			calcAntiDiag3();
 
 			// Track new currScore
-			int16_t norm = updateCurrScore(); // currScore contains scoreOffset
-
-			// Ensure anti-diagonals stay in int16_t range
-	    	normalizeVectors(norm);
+			int16_t norm = updateCurrScore();
 
 	    	// Trace state
-	    	trace.pushbackState( antiDiag1, antiDiag2, antiDiag3, vqueryh, vqueryv, scoreOffset, lastMove );
+	    	// trace.pushbackState( antiDiag1, antiDiag2, antiDiag3, vqueryh, vqueryv, lastMove );
 
 			// Update bestScore
 			if ( currScore > bestScore )
@@ -193,11 +182,8 @@ namespace xavier
 			// Track new currScore
 			int16_t norm = updateCurrScore();
 
-			// Ensure anti-iagonals stay in int16_t range
-	    	normalizeVectors(norm);
-
 	    	// Trace state
-	    	trace.pushbackState( antiDiag1, antiDiag2, antiDiag3, vqueryh, vqueryv, scoreOffset, lastMove );
+	    	// trace.pushbackState( antiDiag1, antiDiag2, antiDiag3, vqueryh, vqueryv, lastMove );
 
 			// Update bestScore
 			if ( currScore > bestScore )
@@ -245,10 +231,7 @@ namespace xavier
 	{
 		/* (a) shift to the left on query horizontal */
 		vqueryh = vqueryh.lshift();
-		// vqueryh[VectorRegister::LOGICALWIDTH - 1] = hoffset >= hlength ? VectorRegister::NINF : queryh[hoffset++];
-		// GG: shouldn't we load the next one in pos LOGICALWIDTH?
 		vqueryh[VectorRegister::LOGICALWIDTH - 1] = hoffset > hlength ? VectorRegister::NINF : queryh[hoffset++];
-		// vqueryh[VectorRegister::LOGICALWIDTH] = queryh[hoffset++];
 
 		/* (b) shift left on updated vector 1: this places the right-aligned vector 2 as a left-aligned vector 1 */
 		antiDiag1 = antiDiag2;
@@ -264,7 +247,6 @@ namespace xavier
 		vqueryv = vqueryv.rshift();
 		vqueryv[0] = voffset > vlength ? VectorRegister::NINF : queryv[voffset++];
 		vqueryv[VectorRegister::LOGICALWIDTH] = VectorRegister::NINF;
-		// vqueryv[0] = queryv[voffset++];
 
 		/* (b) shift to the right on updated vector 2: this places the left-aligned vector 3 as a right-aligned vector 2 */
 		antiDiag1 = antiDiag2;
@@ -279,7 +261,7 @@ namespace xavier
 		int16_t antiDiagBest = *std::max_element( antiDiag3.internal.elems,
 		                                         antiDiag3.internal.elems
 		                                          + VectorRegister::VECTORWIDTH );
-		currScore = antiDiagBest + scoreOffset;
+		currScore = antiDiagBest;
 
 		return antiDiagBest;
 	}
@@ -294,18 +276,6 @@ namespace xavier
 	bool Aligner::closingCondition()
 	{
 		return hoffset > hlength || voffset > vlength;
-	}
-
-	void Aligner::normalizeVectors(int16_t& normfactor)
-	{
-		int64_t antiDiagBest = currScore - scoreOffset;
-
-		if ( antiDiagBest > VectorRegister::CUTOFF )
-		{
-			antiDiag2 = antiDiag2 - normfactor;
-			antiDiag3 = antiDiag3 - normfactor;
-			scoreOffset += normfactor;
-		}
 	}
 
 	void Aligner::checkOffsetValidity(const uint64_t& hit)
